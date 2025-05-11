@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - FreshMart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #388E3C;
+            --light: #F5F5F5;
+            --dark: #212121;
+            --gray: #757575;
+            --white: #FFFFFF;
+            --danger: #F44336;
+            --warning: #FFC107;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .nav-link {
+            color: var(--white);
+            background-color: var(--secondary);
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: #2E7D32;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .category {
+            margin-left: 20px;
+            margin-top: 20px;
+            padding-left: 20px;
+            border-left: 2px solid var(--primary);
+        }
+
+        .subcategory {
+            margin-left: 20px;
+            margin-top: 20px;
+            padding-left: 20px;
+            border-left: 2px dashed var(--gray);
+        }
+
+        .product {
+            margin-left: 20px;
+            margin-top: 20px;
+            padding-left: 20px;
+            border-left: 2px dotted var(--gray);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #D32F2F;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-warning:hover {
+            background-color: #FFA000;
+        }
+
+        .error {
+            color: var(--danger);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .login-form {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container input {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background-color: #D32F2F;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-link {
+                text-align: center;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .logout-btn {
+                position: static;
+                margin-top: 15px;
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+     /* New Toggle Styles */
+        .toggle-header {
+            cursor: pointer;
+            position: relative;
+            padding-left: 30px;
+            margin: 10px 0;
+        }
+
+        .toggle-header i {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible {
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-left: 20px;
+        }
+
+        .active .fa-caret-right {
+            transform: translateY(-50%) rotate(90deg);
+        }
+
+        .toggle-section {
+            margin-left: 20px;
+            border-left: 2px solid var(--primary);
+            padding-left: 15px;
+        }
+
+     /* New Toggle Styles - Add these at the end of style section */
+        .toggle-container {
+            margin: 15px 0;
+        }
+
+        .toggle-header {
+            cursor: pointer;
+            position: relative;
+            padding-left: 30px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-header:hover {
+            color: var(--secondary);
+        }
+
+        .toggle-header i {
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.3s ease;
+            color: var(--primary);
+        }
+
+        .collapsible {
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            padding-left: 20px;
+            margin-left: 10px;
+            border-left: 2px solid var(--primary);
+        }
+
+        .toggle-header.active i {
+            transform: translateY(-50%) rotate(90deg);
+        }
+
+        .category-toggle {
+            background-color: rgba(76, 175, 80, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .subcategory-toggle {
+            background-color: rgba(76, 175, 80, 0.05);
+            padding: 8px;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+
+      .toggle-title {
+            margin-left: 10px; /* Space between icon and text */
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .toggle-header i:not(.fa-caret-right) {
+            margin-right: 5px; /* Space between icons */
+            width: 20px; /* Fixed width for icons */
+            text-align: center;
+            display: inline-block;
+        }
+
+        .toggle-header {
+            padding: 12px 15px 12px 35px; /* More padding for better spacing */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Ensure text doesn't overlap with caret */
+        .toggle-header i.fa-caret-right {
+            left: 12px;
+            width: 15px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <h1>FreshMart Admin Panel</h1>
+            {% if not login_page %}
+                <a href="/admin/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="container">
+        {% if login_page %}
+            <div class="login-form">
+                <h1><i class="fas fa-lock"></i> Admin Login</h1>
+                {% if error %}
+                    <p class="error">{{ error }}</p>
+                {% endif %}
+                <form method="POST" action="/admin">
+                    <div class="form-row">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required placeholder="Enter admin username">
+                    </div>
+                    <div class="form-row">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter password">
+                    </div>
+                    <button type="submit">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Store
+                </a>
+            </div>
+        {% else %}
+            <div class="nav-links">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-store"></i> View Store
+                </a>
+                <a href="/admin/panel" class="nav-link">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </a>
+            </div>
+
+            <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+
+            <!-- Add Category Form -->
+            <div class="section">
+                <h2><i class="fas fa-plus-circle"></i> Add New Category</h2>
+                <form method="POST" action="/admin/add_category">
+                    <div class="form-row">
+                        <label for="name">Category Name:</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter category name">
+                    </div>
+                    <button type="submit">
+                        <i class="fas fa-save"></i> Add Category
+                    </button>
+                </form>
+            </div>
+
+            <!-- Categories List -->
+
+            <!-- Categories List with Proper Toggle Structure -->
+            <!-- Updated Categories List with proper icon spacing -->
+    {% for category in grocery_data.categories %}
+    <div class="section">
+        <div class="toggle-container">
+            <div class="toggle-header category-header" onclick="toggleSection('category-{{ category.id }}', this)">
+                <i class="fas fa-caret-right"></i>
+                <i class="fas fa-folder"></i>
+                <span class="toggle-title">{{ category.name }}</span>
+            </div>
+
+            <div id="category-{{ category.id }}" class="collapsible-content">
+
+
+                        <!-- Category Edit Form -->
+                        <form method="POST" action="/admin/update_category/{{ category.id }}" class="toggle-section">
+                            <div class="form-row">
+                                <input type="text" name="name" value="{{ category.name }}" required>
+                            </div>
+                            <div class="action-buttons">
+                                <button type="submit"><i class="fas fa-edit"></i> Update</button>
+                                <a href="/admin/delete_category/{{ category.id }}" class="btn-danger">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </div>
+                        </form>
+
+                        <!-- Add Subcategory Toggle -->
+                        <div class="toggle-header subcategory-toggle" onclick="toggleSection('add-subcat-{{ category.id }}')">
+                            <i class="fas fa-caret-right"></i>
+                            <h4><i class="fas fa-plus-circle"></i> Add Subcategory</h4>
+                        </div>
+
+                        <div id="add-subcat-{{ category.id }}" class="collapsible">
+                            <form method="POST" action="/admin/add_subcategory/{{ category.id }}" class="toggle-section">
+                                <div class="form-row">
+                                    <input type="text" name="name" required placeholder="Enter subcategory name">
+                                </div>
+                                <button type="submit"><i class="fas fa-save"></i> Add Subcategory</button>
+                            </form>
+                        </div>
+
+                        <!-- Subcategories List -->
+                           {% for subcategory in category.subcategories %}
+                <div class="toggle-container">
+                    <div class="toggle-header subcategory-header" onclick="toggleSection('subcat-{{ subcategory.id }}', this)">
+                        <i class="fas fa-caret-right"></i>
+                        <i class="fas fa-folder-open"></i>
+                        <span class="toggle-title">{{ subcategory.name }}</span>
+                    </div>
+
+                            <div id="subcat-{{ subcategory.id }}" class="collapsible">
+                                <!-- Subcategory Edit Form -->
+                                <form method="POST" action="/admin/update_subcategory/{{ category.id }}/{{ subcategory.id }}" class="toggle-section">
+                                    <div class="form-row">
+                                        <input type="text" name="name" value="{{ subcategory.name }}" required>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button type="submit"><i class="fas fa-edit"></i> Update</button>
+                                        <a href="/admin/delete_subcategory/{{ category.id }}/{{ subcategory.id }}" class="btn-danger">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </form>
+
+                                <!-- Add Product Toggle -->
+                                <div class="toggle-header" onclick="toggleSection('add-prod-{{ subcategory.id }}')">
+                                    <i class="fas fa-caret-right"></i>
+                                    <h6><i class="fas fa-plus-circle"></i> Add Product</h6>
+                                </div>
+
+                                <div id="add-prod-{{ subcategory.id }}" class="collapsible">
+                                    <form method="POST" action="/admin/add_product/{{ category.id }}/{{ subcategory.id }}" class="toggle-section">
+                                        <div class="form-row">
+                                            <label>Product Name:</label>
+                                            <input type="text" name="name" required placeholder="Enter product name">
+                                        </div>
+                                        <div class="form-row">
+                                            <label>Price (₹):</label>
+                                            <input type="number" name="price" min="1" required placeholder="Enter price">
+                                        </div>
+                                        <div class="form-row">
+                                            <label>Unit:</label>
+                                            <input type="text" name="unit" required placeholder="e.g., 1 kg, 500 g" value="1 pc">
+                                        </div>
+                                        <div class="form-row checkbox-container">
+                                            <input type="checkbox" name="available" checked>
+                                            <label>Available</label>
+                                        </div>
+                                        <button type="submit"><i class="fas fa-save"></i> Add Product</button>
+                                    </form>
+                                </div>
+
+                                <!-- Products List -->
+                              {% for product in subcategory.products %}
+                    <div class="toggle-container">
+                        <div class="toggle-header product-header" onclick="toggleSection('prod-{{ product.id }}', this)">
+                            <i class="fas fa-caret-right"></i>
+                            <i class="fas fa-box"></i>
+                            <span class="toggle-title">{{ product.name }}</span>
+                        </div>
+
+                                    <div id="prod-{{ product.id }}" class="collapsible">
+                                        <form method="POST" action="/admin/update_product/{{ category.id }}/{{ subcategory.id }}/{{ product.id }}" class="toggle-section">
+                                            <div class="form-row">
+                                                <label>Product Name:</label>
+                                                <input type="text" name="name" value="{{ product.name }}" required>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>Price (₹):</label>
+                                                <input type="number" name="price" value="{{ product.price }}" min="1" required>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>Unit:</label>
+                                                <input type="text" name="unit" value="{{ product.unit }}" required>
+                                            </div>
+                                            <div class="form-row checkbox-container">
+                                                <input type="checkbox" name="available" {% if product.available %}checked{% endif %}>
+                                                <label>Available</label>
+                                            </div>
+                                            <div class="action-buttons">
+                                                <button type="submit"><i class="fas fa-edit"></i> Update</button>
+                                                <a href="/admin/delete_product/{{ category.id }}/{{ subcategory.id }}/{{ product.id }}" class="btn-danger">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </main>
+
+    <script>
+        function toggleSection(id) {
+            const section = document.getElementById(id);
+            const header = section.previousElementSibling;
+
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+            header.classList.toggle('active');
+        }
+
+        // Initialize all sections as collapsed
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.collapsible').forEach(el => {
+                el.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grocery Store</title>
+
+<style>
+    body {
+      background: #f2f2f2;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00b386;
+    }
+
+    .category-bar {
+      display: flex;
+      overflow-x: auto;
+      background: #fff;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .category-item {
+      min-width: 100px;
+      text-align: center;
+      margin: 0 8px;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      color: #333;
+    }
+
+    .category-item.active {
+      background-color: #00b386;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .subcategory-section {
+      background: #fff;
+      margin-top: 20px;
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      padding: 20px;
+    }
+
+    .subcategory {
+      margin-bottom: 20px;
+    }
+
+    .subcategory h3 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 6px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .product-card {
+      background: #f9f9f9;
+      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid #ddd;
+    }
+
+    .product-card h4 {
+      margin: 0 0 5px;
+      font-size: 16px;
+      color: #222;
+    }
+
+    .product-card p {
+      margin: 3px 0;
+      font-size: 14px;
+    }
+
+    .in-stock {
+      color: green;
+      font-weight: 600;
+    }
+
+    .out-of-stock {
+      color: red;
+      font-weight: 600;
+    }
+
+    .cart-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .cart-controls button {
+      background: #00b386;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .cart-controls input {
+      width: 35px;
+      text-align: center;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    form input, form select, form button {
+      margin-bottom: 10px;
+      padding: 8px;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    form button {
+      background-color: #00b386;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      border-radius: 10px;
+      color: #856404;
+    }
+
+    .note {
+      font-size: 14px;
+      color: #b30000;
+      margin-top: 5px;
+    }
+
+    .admin-link {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #3498db;
+      text-decoration: none;
+    }
+  </style>
+
+
+</head>
+<body>
+  {% if not show_whatsapp %}
+  <form method="POST" action="/submit_order" onsubmit="return checkMinimumOrder();">
+    <div class="container">
+      <h1>Surya Grocery</h1>
+
+      <div class="category-bar" id="categoryBar"></div>
+      <div class="subcategory-section" id="subcategorySection"></div>
+
+      <div class="summary" id="orderSummary">
+        <div id="cartItems"></div>
+        <strong>Total: ₹<span id="totalAmount">0</span></strong>
+        <div class="note">Minimum order: ₹50</div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h3>Customer Details</h3>
+        <input type="text" name="name" placeholder="Your Name" required><br>
+        <input type="tel" name="phone" placeholder="Mobile Number" required><br>
+        <input type="text" name="address" placeholder="Address" required><br>
+
+        <label>Payment Mode:</label><br>
+        <select name="payment_mode" required>
+          <option value="Cash">Cash</option>
+          <option value="UPI">Online</option>
+        </select><br>
+
+            <div id="upiSection" style="display:none;">
+  <h4>Scan & Pay</h4>
+  <div class="upi-container">
+    <div class="qr-code">
+      <img src="/static/qr.jpg" alt="UPI QR Code" style="max-width: 100px;">
+    </div>
+    <div class="upi-details">
+      <p><strong>Pay using:</strong></p>
+      <p class="upi-id">8969161759@fam</p>
+      <p>OR</p>
+      <p><strong>Send to PhonePe/GooglePay:</strong></p>
+      <p>8969161759</p>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top: 15px; margin-bottom: 25px; color: red;">
+    <strong>After payment, click Place Order and share payment screenshot on WhatsApp</strong>
+  </div>
+</div>
+
+        <button type="submit">Place Order on WhatsApp</button>
+      </div>
+    </div>
+  </form>
+  {% else %}
+  <div class="container">
+    <h1>Your Order is Ready to Send</h1>
+    <div style="text-align: center; margin-top: 30px;">
+      <p>Click the button below to send your order via WhatsApp to the store owner.</p>
+      <a href="{{ whatsapp_url }}" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 15px;">
+        Send Order via WhatsApp
+      </a>
+      <p style="margin-top: 20px;"><a href="/" style="color: #3498db; text-decoration: none;">Place another order</a></p>
+    </div>
+  </div>
+  {% endif %}
+
+<script>
+  function prepareCategories() {
+    const categoriesMap = {};
+
+    {% for category in grocery_data.categories %}
+    categoriesMap["{{ category.id }}"] = {
+      id: "{{ category.id }}",
+      name: "{{ category.name }}",
+      icon: "🛒",
+      subcategories: []
+    };
+
+      {% for subcategory in category.subcategories %}
+      categoriesMap["{{ category.id }}"].subcategories.push({
+        name: "{{ subcategory.name }}",
+        products: []
+      });
+
+        {% for product in subcategory.products %}
+        categoriesMap["{{ category.id }}"].subcategories[
+          categoriesMap["{{ category.id }}"].subcategories.length - 1
+        ].products.push({
+          id: "{{ product.id }}",
+          name: "{{ product.name }}",
+          qty: "{{ product.unit }}",
+          price: {{ product.price }},
+          stock: {{ product.available|lower }}
+        });
+        {% endfor %}
+      {% endfor %}
+    {% endfor %}
+
+    return Object.values(categoriesMap);
+  }
+
+  const categories = prepareCategories();
+  let activeCategoryId = categories[0]?.id || null;
+  let cartQuantities = {};
+
+  function renderCategories() {
+    const categoryBar = document.getElementById('categoryBar');
+    categoryBar.innerHTML = '';
+    categories.forEach(cat => {
+      const div = document.createElement('div');
+      div.className = 'category-item' + (cat.id === activeCategoryId ? ' active' : '');
+      div.innerHTML = `<div class="category-icon">${cat.icon}</div>${cat.name}`;
+      div.onclick = () => {
+        activeCategoryId = cat.id;
+        renderCategories();
+        renderSubcategories();
+      };
+      categoryBar.appendChild(div);
+    });
+  }
+
+  function renderSubcategories() {
+    const container = document.getElementById('subcategorySection');
+    const activeCategory = categories.find(cat => cat.id === activeCategoryId);
+    container.innerHTML = '';
+
+    if (!activeCategory) return;
+
+    activeCategory.subcategories.forEach(sub => {
+      const div = document.createElement('div');
+      div.className = 'subcategory';
+      div.innerHTML = `<h3>${sub.name}</h3>
+        <div class="product-grid">
+          ${sub.products.map(prod => {
+            const qtyName = 'product_' + prod.id;
+            const savedQty = cartQuantities[qtyName] || 0;
+            return `
+              <div class="product-card">
+                <h4>${prod.name}</h4>
+                <p>${prod.qty} - ₹${prod.price}</p>
+                <p class="${prod.stock ? 'in-stock' : 'out-of-stock'}">
+                  ${prod.stock ? 'In Stock' : 'Out of Stock'}
+                </p>
+                <div class="cart-controls">
+                  <button type="button" onclick="decreaseQty(this, ${prod.price}, ${prod.id})" ${!prod.stock ? 'disabled' : ''}>-</button>
+                  <input type="text" name="${qtyName}" value="${savedQty}" readonly>
+                  <button type="button" onclick="increaseQty(this, ${prod.price}, ${prod.id})" ${!prod.stock ? 'disabled' : ''}>+</button>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>`;
+      container.appendChild(div);
+    });
+  }
+
+  function increaseQty(btn, price, productId) {
+    const input = btn.parentElement.querySelector('input');
+    const name = 'product_' + productId;
+    input.value = parseInt(input.value) + 1;
+    cartQuantities[name] = parseInt(input.value);
+    updateTotal();
+  }
+
+  function decreaseQty(btn, price, productId) {
+    const input = btn.parentElement.querySelector('input');
+    const name = 'product_' + productId;
+    const val = parseInt(input.value);
+    if (val > 0) {
+      input.value = val - 1;
+      cartQuantities[name] = parseInt(input.value);
+    }
+    updateTotal();
+  }
+
+  function updateTotal() {
+    let total = 0;
+    const cartItems = [];
+    const cartDiv = document.getElementById('cartItems');
+    cartDiv.innerHTML = '';
+
+    categories.forEach(category => {
+      category.subcategories.forEach(subcategory => {
+        subcategory.products.forEach(product => {
+          const qtyName = 'product_' + product.id;
+          const qty = cartQuantities[qtyName] || 0;
+          if (qty > 0) {
+            const itemTotal = qty * product.price;
+            total += itemTotal;
+            cartItems.push(`<div>${product.name} ${product.qty}: (&#x20B9;${product.price}) × ${qty} = ₹${itemTotal}</div>`);
+          }
+        });
+      });
+    });
+
+    cartDiv.innerHTML = cartItems.join('');
+    document.getElementById('totalAmount').innerText = total;
+  }
+
+  function checkMinimumOrder() {
+    const total = parseInt(document.getElementById('totalAmount').innerText);
+    if (total < 50) {
+      alert("Minimum order amount is ₹50.");
+      return false;
+    }
+
+    const form = document.querySelector('form');
+    document.querySelectorAll('.hidden-cart-input').forEach(e => e.remove());
+
+    categories.forEach(category => {
+      category.subcategories.forEach(subcategory => {
+        subcategory.products.forEach(product => {
+          const qtyName = 'product_' + product.id;
+          const qty = cartQuantities[qtyName] || 0;
+          if (qty > 0) {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = qtyName;
+            hiddenInput.value = qty;
+            hiddenInput.classList.add('hidden-cart-input');
+            form.appendChild(hiddenInput);
+          }
+        });
+      });
+    });
+
+    return true;
+  }
+
+  // Initialize the page
+  if (categories.length > 0) {
+    renderCategories();
+    renderSubcategories();
+  }
+
+  // Payment mode change handler
+  document.querySelector('select[name="payment_mode"]')?.addEventListener('change', function() {
+    const upiSection = document.getElementById('upiSection');
+    if (this.value === 'UPI') {
+      upiSection.style.display = 'block';
+    } else {
+      upiSection.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>
